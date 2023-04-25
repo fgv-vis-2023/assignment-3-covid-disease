@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     svg
       .append('g')
-      .attr('transform', 'translate(30,30)')
+      .attr('transform', 'translate(7,80)')
       .call(slider)
 
   })
