@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     d3.json('./data/world_countries.json'),
     d3.json('./data/data.json'),
   ]).then((res) => {
-    document.body.innerHTML = '<h1>Covid Evolution</h1><h2>New Cases: <span id="date"></span></h2><div id="chart"></div>'
+    document.body.innerHTML = '<h1>Covid Evolution</h1><h2>New Cases: <span id="date"></span></h2><div id="chart"></div><button id="play">Play</button>'
 
     // Dimensions
     const width = 950
@@ -99,6 +99,27 @@ document.addEventListener('DOMContentLoaded', function (event) {
         document.getElementById('date').textContent = formatDate(new Date(selectedDate))
         redraw()
       })
+
+    play = false;
+    d3.selectAll('#play').on("click", async () => {
+      if(play) {
+        play = false;
+        document.getElementById('play').textContent = 'Play';
+      } else {
+        play = true;
+        document.getElementById('play').textContent = 'Stop';
+      }
+      while(slider.value() < 1200 & play) {
+        slider.value(slider.value() + 30);
+        await new Promise(r => setTimeout(r, 600));
+        if(slider.value() >= 1200) {
+          play = false;
+          document.getElementById('play').textContent = 'Play';
+          slider.value(0)
+          break;
+        }
+      }
+    })
 
     svg
       .append('g')
