@@ -38,11 +38,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     // projection setup
     const projection = d3.geoRobinson()
-      .scale(140)
-      .rotate([360, 0, 0])
-      .translate([width / 2, height / 2])
-    const path = d3.geoPath().projection(projection)
-    console.log(path)
+      .scale(140) // The scale determines how much to magnify or reduce the features of the map
+      .rotate([360, 0, 0]) // Center the map (Pacific Ocean?)
+      .translate([width / 2, height / 2]) // translate the center of the map to center of the svg element
+    const path = d3.geoPath().projection(projection) // Handles the projection
     // Map data
     const world = res[0]
     // New cases data
@@ -55,19 +54,19 @@ document.addEventListener('DOMContentLoaded', function (event) {
     
     // Get all dates (uniques and sorted)
     let dates = [...new Set(data.map(v => v.date))].sort((a, b) => new Date(a) - new Date(b));
-    let max_date = dates[dates.length - 1]
-    let filter_date = new Date(max_date);
-    filter_date.setDate(filter_date.getDate() - 2);
-    dates = dates.filter(v => new Date(v) < filter_date)
+    let maxDate = dates[dates.length - 1]
+    let filterDate = new Date(maxDate);
+    filterDate.setDate(filterDate.getDate() - 4);
+    dates = dates.filter(v => new Date(v) < filterDate)
     let selectedDate = dates[0]
 
+    // Function to redraw the map based on the selected date
     function redraw () {
       svg.selectAll('g.countries').remove()
 
-      const dataByName = {}
+      const dataByID = {}
       const dataByDate = data.filter(v => v.date === selectedDate)
-      dataByDate.forEach(v => { dataByName[v.iso_code] = v.new_cases })
-      world.features.forEach(d => {d.case = typeof dataByName[d.id] === 'number' ? dataByName[d.id] : 0})
+      dataByDate.forEach(v => { dataByID[v.iso_code] = v.new_cases })
       svg
         .append('g')
         .attr('class', 'countries')
@@ -76,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
         .enter()
         .append('path')
         .attr('d', path)
-        .style('fill', d => dataByName[d.id] ? color(dataByName[d.id]) : colors[0])
+        .style('fill', d => dataByID[d.id] ? color(dataByID[d.id]) : colors[0])
         .style('stroke', '#646464')
         .style('opacity', 0.8)
         .style('stroke-width', 1.5)
