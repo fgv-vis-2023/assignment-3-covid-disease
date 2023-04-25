@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     d3.json('./data/world_countries.json'),
     d3.json('./data/data.json'),
   ]).then((res) => {
-    document.body.innerHTML = '<h1>New Cases: <span id="date"></span></h1><div id="chart"></div>'
+    document.body.innerHTML = '<h1>Covid Evolution</h1><h2>New Cases: <span id="date"></span></h2><div id="chart"></div>'
 
     // Dimensions
     const margin = { top: 0, right: 0, bottom: 0, left: 0 }
