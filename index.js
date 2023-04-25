@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     document.body.innerHTML = '<h1>Covid Evolution</h1><h2>New Cases: <span id="date"></span></h2><div id="chart"></div>'
 
     // Dimensions
-    const width = 950 
+    const width = 950
     const height = 550
 
     // SVG init
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     // projection setup
     const projection = d3.geoRobinson()
-      .scale(150)
+      .scale(140)
       .rotate([360, 0, 0])
       .translate([width / 2, height / 2])
     const path = d3.geoPath().projection(projection)
