@@ -109,10 +109,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
         play = true;
         document.getElementById('play').textContent = 'Stop';
       }
-      while(slider.value() < 1204 & play) {
+      while(slider.value() < 1200 & play) {
         slider.value(slider.value() + 30);
         await new Promise(r => setTimeout(r, 600));
-        if(slider.value() == 1204) {
+        if(slider.value() >= 1200) {
           play = false;
           document.getElementById('play').textContent = 'Play';
           slider.value(0)
