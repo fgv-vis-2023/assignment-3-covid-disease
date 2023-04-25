@@ -26,9 +26,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
     document.body.innerHTML = '<h1>Covid Evolution</h1><h2>New Cases: <span id="date"></span></h2><div id="chart"></div>'
 
     // Dimensions
-    const margin = { top: 0, right: 0, bottom: 0, left: 0 }
-    const width = 960 - margin.left - margin.right
-    const height = 500 - margin.top - margin.bottom
+    const width = 950 
+    const height = 550
 
     // SVG init
     const svg = d3
