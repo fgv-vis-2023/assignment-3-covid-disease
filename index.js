@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     svg
       .append('g')
-      .attr('transform', `translate(${width/2 - 160}, ${height - 50})`)
+      .attr('transform', `translate(${width/2 - 190}, ${height - 50})`)
       .call(slider)
 
     const legend = svg.append('g')
