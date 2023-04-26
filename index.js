@@ -23,11 +23,16 @@ document.addEventListener('DOMContentLoaded', function (event) {
     d3.json('./data/world_countries.json'),
     d3.json('./data/data.json'),
   ]).then((res) => {
-    document.body.innerHTML = '<h1>Covid Evolution</h1><h2>New Cases: <span id="date"></span></h2><div id="chart"></div><button id="play">Play</button><a href="https://github.com/owid/covid-19-data/tree/master/public/data" target="_blank">Fonte dos dados(OWID)</a>'
+    document.body.innerHTML = `
+    <h1>Covid Evolution</h1>
+    <h2>New Cases: <span id="date"></span></h2>
+    <div id="chart"></div>
+    <button id="play">Play</button>
+    <a href="https://github.com/owid/covid-19-data/tree/master/public/data" target="_blank">Fonte dos dados(OWID)</a>`
 
     // Dimensions
-    const width = 950
-    const height = 550
+    const width = 1200
+    const height = 600
 
     // SVG init
     const svg = d3
@@ -49,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     
     // Color scale (we use threshold scale)
     const color = d3.scaleThreshold()
-      .domain([0, 1000, 10000, 50000, 100000, 500000, 1000000, 2000000])
+      .domain([1000, 10000, 50000, 100000, 250000, 500000, 1000000])
       .range(colors)
     
     // Get all dates (uniques and sorted)
@@ -86,12 +91,13 @@ document.addEventListener('DOMContentLoaded', function (event) {
     document.getElementById('date').textContent = formatDate(new Date(selectedDate))
     let tickIndex = 0
     const slider = d3
-      .sliderRight()
+      .sliderHorizontal()
       .max(dates.length - 1)
       .tickValues(Array.from(dates.keys()))
-      .step(2)
-      .height(400)
-      .tickFormat(tick => ++tickIndex % 100 === 0 ? dates[tick] : null)
+      .step(1)
+      .height(30)
+      .width(400)
+      .tickFormat(tick => ++tickIndex == (dates.length-1) || tickIndex == 1 ? dates[tick] : null)
       .displayFormat(tick => dates[tick])
       .default(0)
       .on('onchange', tick => {
@@ -100,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
         redraw()
       })
 
-    play = false;
+    let play = false;
     d3.selectAll('#play').on("click", async () => {
       if(play) {
         play = false;
@@ -110,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function (event) {
         document.getElementById('play').textContent = 'Stop';
       }
       while(slider.value() < 1200 & play) {
-        slider.value(slider.value() + 30);
-        await new Promise(r => setTimeout(r, 600));
+        slider.value(slider.value() + 1);
+        await new Promise(r => setTimeout(r, 75));
         if(slider.value() >= 1200) {
           play = false;
           document.getElementById('play').textContent = 'Play';
@@ -123,8 +129,19 @@ document.addEventListener('DOMContentLoaded', function (event) {
 
     svg
       .append('g')
-      .attr('transform', 'translate(7,80)')
+      .attr('transform', `translate(${width/2 - 160}, ${height - 50})`)
       .call(slider)
+
+    const legend = svg.append('g')
+      .attr('class', 'legendQuant')
+      .attr('transform', 'translate(1000,50)')
+
+    legend.call(d3.legendColor()
+      .orient('vertical')
+      .shapeWidth(60)
+      .labelFormat(d3.format('i'))
+      .labels(d3.legendHelpers.thresholdLabels)
+      .scale(color))
 
   })
 })
