@@ -23,13 +23,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
     d3.json('./data/world_countries.json'),
     d3.json('./data/data.json'),
   ]).then((res) => {
-    document.body.innerHTML = `
-    <h1>Covid Evolution</h1>
-    <h2>New Cases: <span id="date"></span></h2>
-    <div id="chart"></div>
-    <button id="play">Play</button>
-    <a href="https://github.com/owid/covid-19-data/tree/master/public/data" target="_blank">Fonte dos dados(OWID)</a>`
-
     // Dimensions
     const width = 1200
     const height = 600
