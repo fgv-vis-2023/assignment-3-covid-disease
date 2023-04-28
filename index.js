@@ -14,7 +14,8 @@ let naming_dict = {
   'total_cases': 'Total Cases',
   'new_cases': 'New Cases',
   'new_deaths': 'New Deaths',
-  'total_deaths': 'Total Deaths'
+  'total_deaths': 'Total Deaths',
+  '7DMA': '1 Week Moving Average',
 }
 
 const formatDate = function(d) {
@@ -160,6 +161,9 @@ document.addEventListener('DOMContentLoaded', function (event) {
         case 'total_deaths':
           color.domain([1000, 10000, 50000, 100000, 250000, 500000, 1000000])
           break
+        case '7DMA':
+          color.domain([1000, 10000, 50000, 100000, 250000, 500000, 1000000])
+
       }
       document.getElementById('variable').textContent = naming_dict[selectedVar]
 
