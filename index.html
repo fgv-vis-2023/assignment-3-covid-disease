@@ -12,9 +12,28 @@
 </head>
 <body>
   <h1>Covid Evolution</h1>
-  <h2>New Cases: <span id="date"></span></h2>
+  <h2><span id="variable">New Cases</span>: <span id="date"></span></h2>
+  <div id="overview">
+    <!--Create a selector where the user can choose
+    among Total Cases, New Cases, New Deaths, Total Deaths,
+    New Tests, Total Tests-->
+    <select id="selectvar">
+      <option value="total_cases">Total Cases</option>
+      <option value="new_cases">New Cases</option>
+      <option value="new_deaths">New Deaths</option>
+      <option value="total_deaths">Total Deaths</option>
+    </select>
+    <ul id="toplist">
+    </ul>
+  </div>
   <div id="chart"></div>
-  <button id="play">Play</button>
+  <!--Add a '-' before the button play and a '+' after the button play-->
+  <div id="animate">
+    <button id="minus">-</button>
+    <button id="play">Play</button>
+    <button id="plus">+</button>
+  </div>
+  <p id="steps">Steps: 1 days</p>
   <a href="https://github.com/owid/covid-19-data/tree/master/public/data" target="_blank">Fonte dos dados(OWID)</a>
 </body>
 </html>
