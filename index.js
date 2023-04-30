@@ -9,7 +9,7 @@ const colors = [
   'rgb(139, 0, 0)',
   'rgb(100, 0, 0)',
 ]
-
+ 
 let naming_dict = {
   'total_cases': 'Total Cases',
   'new_cases': 'New Cases',
@@ -17,14 +17,14 @@ let naming_dict = {
   'total_deaths': 'Total Deaths',
   '7DMA': '1 Week Moving Average',
 }
-
+ 
 const formatDate = function(d) {
   let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
   let mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d);
   let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
   return `${da} ${mo} ${ye}`;
 }
-
+ 
 document.addEventListener('DOMContentLoaded', function (event) {
   // Create a promise to load data
   Promise.all([
@@ -35,14 +35,14 @@ document.addEventListener('DOMContentLoaded', function (event) {
     // Dimensions
     const width = 1200
     const height = 600
-
+ 
     // SVG init
     const svg = d3
       .select('#chart')
       .append('svg')
       .attr('width', width)
       .attr('height', height)
-
+ 
     // projection setup
     const projection = d3.geoRobinson()
       .scale(140) // The scale determines how much to magnify or reduce the features of the map
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
     // Create a dictionary to map iso codes to country names
     const isoDict = {}
     isoMap.forEach(v => { isoDict[v['alpha-3']] = v.name })
-
+ 
     // Color scale (we use threshold scale)
     const color = d3.scaleThreshold()
       .domain([1000, 10000, 50000, 100000, 250000, 500000, 1000000])
@@ -71,16 +71,22 @@ document.addEventListener('DOMContentLoaded', function (event) {
     filterDate.setDate(filterDate.getDate() - 4);
     dates = dates.filter(v => new Date(v) < filterDate)
     let selectedDate = dates[0]
-
-
+ 
+ 
     // Get selected option from the dropdown '#selectvar'
     const selectvar = document.getElementById('selectvar')
     let selectedVar = selectvar.value
-    console.log(selectedVar)
+ 
     // Function to redraw the map based on the selected date
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
+ 
     function redraw () {
       svg.selectAll('g.countries').remove()
-
+ 
       const dataByID = {}
       const dataByDate = data.filter(v => v.date === selectedDate)
       dataByDate.forEach(v => { dataByID[v.iso_code] = v[selectedVar] })
@@ -96,9 +102,27 @@ document.addEventListener('DOMContentLoaded', function (event) {
         .style('stroke', '#646464')
         .style('opacity', 0.8)
         .style('stroke-width', 1.5)
+        .on('mouseover', (event, d) => {
+          console.log(d)
+          tooltip.transition().duration(200).style('opacity', 0.9);
+          tooltip.html(`${isoDict[d.id]}: ${dataByID[d.id] ? dataByID[d.id] : 0}`)
+            .style('left', `${event.pageX}px`)
+            .style('top', `${event.pageY - 28}px`);
+          d3.select(event.target)
+            .style('stroke', '#000')
+            .style('stroke-width', 2)
+            .style('opacity', 1);
+        })
+        .on('mouseout', (event, d) => {
+          tooltip.transition().duration(300).style('opacity', 0);
+          d3.select(event.target)
+            .style('stroke', '#646464')
+            .style('stroke-width', 1.5)
+            .style('opacity', 0.8);
+        });
     }
     redraw()
-
+ 
     // Function to add the top 10 countries with the most cumulative cases to the 'toplist' ul
     function addTopList () {
       const topList = document.getElementById('toplist')
@@ -112,10 +136,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
       })
     }
     addTopList()
-
+ 
     document.getElementById('date').textContent = formatDate(new Date(selectedDate))
     document.getElementById('variable').textContent = naming_dict[selectedVar]
-
+ 
     let tickIndex = 0
     const slider = d3
       .sliderHorizontal()
@@ -138,14 +162,14 @@ document.addEventListener('DOMContentLoaded', function (event) {
     const legend = svg.append('g')
       .attr('class', 'legendQuant')
       .attr('transform', 'translate(1000,50)')
-
+ 
     legend.call(d3.legendColor()
       .orient('vertical')
       .shapeWidth(60)
       .labelFormat(d3.format('i'))
       .labels(d3.legendHelpers.thresholdLabels)
       .scale(color))
-
+ 
     selectvar.addEventListener('change', (event) => {
       selectedVar = event.target.value
       switch (selectedVar) {
@@ -163,10 +187,10 @@ document.addEventListener('DOMContentLoaded', function (event) {
           break
         case '7DMA':
           color.domain([1000, 10000, 50000, 100000, 250000, 500000, 1000000])
-
+ 
       }
       document.getElementById('variable').textContent = naming_dict[selectedVar]
-
+ 
       redraw()
       addTopList()
       legend.call(d3.legendColor()
@@ -175,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function (event) {
         .labelFormat(d3.format('i'))
         .labels(d3.legendHelpers.thresholdLabels)
         .scale(color))
-
+ 
     })
   
     let play = false;
@@ -198,22 +222,21 @@ document.addEventListener('DOMContentLoaded', function (event) {
         }
       }
     })
-
+ 
     d3.selectAll('#minus').on('click', async () =>  {
       speed = Math.max(speed -1, 1)
       document.getElementById('steps').textContent = `Steps: ${speed} days`
-
+ 
     })
-
+ 
     d3.selectAll('#plus').on('click', async () =>  {
       speed = Math.min(speed + 1, 50)
       document.getElementById('steps').textContent = `Steps: ${speed} days`
     })
-  
     svg
       .append('g')
       .attr('transform', `translate(${width/2 - 190}, ${height - 50})`)
       .call(slider)
-
+ 
   })
 })
