@@ -84,6 +84,76 @@ document.addEventListener('DOMContentLoaded', function (event) {
       .attr('class', 'tooltip')
       .style('opacity', 0);
  
+    // Function to open the modal
+    function openModal(countryName) {
+      const modal = document.getElementById('modal');
+      const modalTitle = document.getElementById('modal-title');
+      modal.style.display = 'block';
+      modalTitle.textContent = countryName;
+    }
+ 
+    // Function to close the modal
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      modal.style.display = 'none';
+    }
+ 
+    const closeButton = document.getElementsByClassName('close')[0];
+    closeButton.addEventListener('click', closeModal);
+ 
+    function updateModalContent(countryName, seriesData) {
+      const modalTitle = document.getElementById('modal-title');
+      modalTitle.textContent = countryName;
+    
+      // Extract the date and value arrays from the series data
+      const dates = seriesData.map(data => new Date(data.date));
+      const values = seriesData.map(data => data[selectedVar]);
+    
+      // Create the chart data object
+      const chartData = {
+        labels: dates,
+        datasets: [
+          {
+            label: naming_dict[selectedVar],
+            data: values,
+            backgroundColor: 'black'
+          }
+        ]
+      };
+    
+      // Get the canvas element and initialize the chart
+      document.querySelector("#chart-holder").innerHTML =  '<canvas id="modal-chart"></canvas>'
+      const chartCanvas = document.getElementById('modal-chart');
+ 
+      const chartContext = chartCanvas.getContext('2d');
+      const barChart = new Chart(chartContext, {
+        type: 'bar',
+        data: chartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'day'
+              },
+              ticks: {
+                source: 'labels'
+              }
+            },
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+ 
+ 
+    }
+    
+ 
+ 
     function redraw () {
       svg.selectAll('g.countries').remove()
  
@@ -103,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
         .style('opacity', 0.8)
         .style('stroke-width', 1.5)
         .on('mouseover', (event, d) => {
-          console.log(d)
           tooltip.transition().duration(200).style('opacity', 0.9);
           tooltip.html(`${isoDict[d.id]}: ${dataByID[d.id] ? dataByID[d.id] : 0}`)
             .style('left', `${event.pageX}px`)
@@ -119,7 +188,14 @@ document.addEventListener('DOMContentLoaded', function (event) {
             .style('stroke', '#646464')
             .style('stroke-width', 1.5)
             .style('opacity', 0.8);
+        })
+        .on('click', (event, d) => {
+          openModal(isoDict[d.id]);
+          // Retrieve the series data for the clicked country and update the modal content
+          const seriesData = data.filter(v => v.iso_code === d.id);
+          updateModalContent(isoDict[d.id], seriesData);
         });
+      
     }
     redraw()
  
@@ -240,3 +316,4 @@ document.addEventListener('DOMContentLoaded', function (event) {
  
   })
 })
+ 
